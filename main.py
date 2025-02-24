@@ -2,8 +2,7 @@
 from scapy.all import ARP, Ether, srp
 
 # function for scanning IP and MAC given target IP and subnet
-def network_scan():
-    target_ip = input("Enter the network to scan: xxx.xxx.xxx.xxx/xx\n")
+def network_scan(target_ip, choice):
 
     # create an ARP packet
     # pdst = protocol destination address
@@ -34,31 +33,43 @@ def network_scan():
         clients.append({'ip': received.psrc, 'mac': received.hwsrc})
 
     # formatting
-    print("Available devices on the network:")
-    # " "*24 adds 24 spaces
-    print("IP" + " "*18+"MAC")
-    # iterate through to print
-    for client in clients:
-        # ensures client['ip'] is left aligned and takes up 16 characters
-        print("{:16}    {}".format(client['ip'], client['mac']))
-
-# checking for a specific ip
-def ip_match():
-    pass
+    if choice.lower() == "n":
+        print("Available devices on the network:")
+        # " "*24 adds 24 spaces
+        print("IP" + " "*18+"MAC")
+        # iterate through to print
+        for client in clients:
+            # ensures client['ip'] is left aligned and takes up 16 characters
+            print("{:16}    {}".format(client['ip'], client['mac']))
+    elif choice.lower() =="s":
+        print("Network searched")
+        for client in clients:
+            if client['ip'] == target_ip:
+                # indicate success
+                print("Match found.")
+                print("{:16}    {}".format(client['ip'], client['mac']))
+                return
+        print("No matches found.")
+        
 
 def user_choice():
     # user options
-    choice = input('''What functionality would you like to use? \n -n to scan a network for IPs and MAC \n -s to 
-    scan a network for a single match''')
+    print("What functionality would you like to use? \n -n to scan a network for IPs and MAC \n -s to ", end ="")
+    choice = input("scan a network for a single IP\n:")
 
     # network
     if choice.lower() == "n":
         # call to function
-        network_scan()
+        target_ip = input("Enter the network to scan: xxx.xxx.xxx.xxx/xx\n")
+        # temporary error checking, will improve
+        if len(target_ip) == 18:
+            network_scan(target_ip, choice)
+        else:
+            print("Invalid input.")
     elif choice.lower() == "s":
         # call to function
-        ip_match()
-
+        target_ip = input("Enter the ip to scan: xxx.xxx.xxx.xxx\n")
+        network_scan(target_ip, choice)
 
 if __name__ == "__main__":
     user_choice()
