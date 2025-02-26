@@ -36,7 +36,7 @@ def network_scan(target_ip, choice):
         clients.append({'ip': received.psrc, 'mac': received.hwsrc})
 
     # formatting
-    if choice.lower() == "n":
+    if choice.lower() == "-n":
         print("Available devices on the network:")
         # " "*24 adds 24 spaces
         print("IP" + " "*18+"MAC")
@@ -44,7 +44,7 @@ def network_scan(target_ip, choice):
         for client in clients:
             # ensures client['ip'] is left aligned and takes up 16 characters
             print("{:16}    {}".format(client['ip'], client['mac']))
-    elif choice.lower() =="s":
+    elif choice.lower() =="-s":
         print("Network searched")
         for client in clients:
             if client['ip'] == target_ip:
@@ -61,43 +61,49 @@ def user_choice():
     choice = input("scan a network for a single IP\n:").lower()
 
     # network
-    if choice == "n":
+    if choice == "-n":
         # call to function
         target_ip = input("Enter the network to scan: xxx.xxx.xxx.xxx/xx\n")
+        print(check_valid(target_ip, choice))
         if check_valid(target_ip, choice):
             # if valid, proceed
             network_scan(target_ip, choice)
         else:
             # error message
-            print("Invalid input.")
-    elif choice == "s":
+            print("invalid entry")
+    elif choice == "-s":
         # same code, different prompt
-        target_ip = input("Enter the network to scan: xxx.xxx.xxx.xxx/xx\n")
+        target_ip = input("Enter the network to scan: xxx.xxx.xxx.xxx\n")
         if check_valid(target_ip, choice):
             # if valid, proceed
             network_scan(target_ip, choice)
         else:
             # error message
-            print("Invalid input.")
+            print("invalid entry")
     # wrong input
     else:
-        print(f"argument not recognized: {choice}")
+        # helping the user enter proper input
+        if choice == "s" or choice == "n":
+            print("invalid input, make sure to include '-' ")
+        else:
+            print(f"argument not recognized: {choice}")
 
 # make sure the user enters a valid IP address 
 def check_valid(ip, choice):
     # using the ipaddress library to check if given address is valid
-    if choice == "n":
+    if choice == "-s":
         try:
             ipaddress.ip_address(ip)
             return True
         except ValueError:
             return False
-    elif choice == "s":
+    elif choice == "-n":
         try: 
-            ipaddress.network(ip)
+            ipaddress.ip_network(ip)
             return True
         except ValueError:
             return False
 
 if __name__ == "__main__":
     user_choice()
+    
