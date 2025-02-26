@@ -1,5 +1,8 @@
 # packet manipulation
 from scapy.all import ARP, Ether, srp
+# ip address validation
+import ipaddress
+
 
 # function for scanning IP and MAC given target IP and subnet
 def network_scan(target_ip, choice):
@@ -55,21 +58,46 @@ def network_scan(target_ip, choice):
 def user_choice():
     # user options
     print("What functionality would you like to use? \n -n to scan a network for IPs and MAC \n -s to ", end ="")
-    choice = input("scan a network for a single IP\n:")
+    choice = input("scan a network for a single IP\n:").lower()
 
     # network
-    if choice.lower() == "n":
+    if choice == "n":
         # call to function
         target_ip = input("Enter the network to scan: xxx.xxx.xxx.xxx/xx\n")
-        # temporary error checking, will improve
-        if len(target_ip) == 18:
+        if check_valid(target_ip, choice):
+            # if valid, proceed
             network_scan(target_ip, choice)
         else:
+            # error message
             print("Invalid input.")
-    elif choice.lower() == "s":
-        # call to function
-        target_ip = input("Enter the ip to scan: xxx.xxx.xxx.xxx\n")
-        network_scan(target_ip, choice)
+    elif choice == "s":
+        # same code, different prompt
+        target_ip = input("Enter the network to scan: xxx.xxx.xxx.xxx/xx\n")
+        if check_valid(target_ip, choice):
+            # if valid, proceed
+            network_scan(target_ip, choice)
+        else:
+            # error message
+            print("Invalid input.")
+    # wrong input
+    else:
+        print(f"argument not recognized: {choice}")
+
+# make sure the user enters a valid IP address 
+def check_valid(ip, choice):
+    # using the ipaddress library to check if given address is valid
+    if choice == "n":
+        try:
+            ipaddress.ip_address(ip)
+            return True
+        except ValueError:
+            return False
+    elif choice == "s":
+        try: 
+            ipaddress.network(ip)
+            return True
+        except ValueError:
+            return False
 
 if __name__ == "__main__":
     user_choice()
